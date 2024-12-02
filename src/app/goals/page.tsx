@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useAppSelector } from "~/lib/hooks/redux";
 import { motion } from "framer-motion";
 import { Navigation } from "~/components/nav";
 import { Card } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Plus, ChevronRight } from "lucide-react";
-import { useAppSelector } from "~/lib/hooks/redux";
 import type { RootState } from "~/lib/store";
 
 interface Goal {

@@ -5,7 +5,7 @@ interface DailyGoalsState {
 }
 
 const initialState: DailyGoalsState = {
-    goals: [],
+    goals: [""],
 };
 
 const dailyGoalsSlice = createSlice({

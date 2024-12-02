@@ -10,7 +10,7 @@ export function Navigation() {
     const pathname = usePathname();
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 p-4 border-t">
+        <div className="fixed bottom-0 left-0 right-0 p-4 border-t z-10 dark:bg-background">
             <div className="flex justify-around items-center max-w-md mx-auto relative">
                 <Link href="/">
                     <Button variant="ghost" size="icon">

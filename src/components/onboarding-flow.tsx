@@ -20,19 +20,20 @@ export default function OnboardingFlow() {
     );
 
     const addGoal = () => {
-        setDailyGoals([...dailyGoals, ""]);
+        const newGoals = [...dailyGoals, ""];
+        dispatch(setDailyGoals(newGoals));
     };
 
     const updateGoal = (index: number, text: string) => {
         const newGoals = [...dailyGoals];
         newGoals[index] = text;
-        setDailyGoals(newGoals);
+        dispatch(setDailyGoals(newGoals));
     };
 
     const removeGoal = (index: number) => {
         if (dailyGoals.length > 1) {
             const newGoals = dailyGoals.filter((_, i) => i !== index);
-            setDailyGoals(newGoals);
+            dispatch(setDailyGoals(newGoals));
         }
     };
 
@@ -98,7 +99,7 @@ export default function OnboardingFlow() {
                                     variants={childVariants}
                                     className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
                                 >
-                                    <div className="w-8 h-8rounded-full" />
+                                    <div className="w-8 h-8 rounded-full" />
                                 </motion.div>
                                 <motion.div
                                     variants={childVariants}

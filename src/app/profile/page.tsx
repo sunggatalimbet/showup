@@ -18,7 +18,7 @@ interface Attribute {
 export default function ProfilePage() {
     const dispatch = useAppDispatch();
     const { level, experience } = useAppSelector((state) => state.avatar);
-    const [attributes, setAttributes] = useState<Attribute[]>([
+    const [attributes] = useState<Attribute[]>([
         { name: "Strength", value: 5, category: "physical" },
         { name: "Agility", value: 3, category: "physical" },
         { name: "Endurance", value: 4, category: "physical" },
