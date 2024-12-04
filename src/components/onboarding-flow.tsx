@@ -2,21 +2,26 @@
 
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "~/lib/hooks/redux";
-
 import { setDailyGoals } from "~/lib/features/dailyGoalsSlice";
 import { completeOnboarding } from "~/lib/features/onboardingSlice";
-import { motion, AnimatePresence } from "framer-motion";
-import { Check, Plus, X } from "lucide-react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
+import { AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "~/components/ui/card";
 import type { RootState } from "~/lib/store";
+
+import WelcomeStep from "~/components/welcome-step";
+import GoalsStep from "~/components/goals-step";
+import ConfirmationStep from "~/components/confirmation-step";
+import QualitiesStep, { type availableQualities } from "./qualities-step";
+import { setSelectedQuality } from "~/lib/features/selectedQualitiesSlice";
 
 export default function OnboardingFlow() {
     const dispatch = useAppDispatch();
     const [step, setStep] = useState(1);
     const dailyGoals = useAppSelector(
         (state: RootState) => state.dailyGoals.goals
+    );
+    const selectedQualities = useAppSelector(
+        (state: RootState) => state.selectedQualities.selectedQualities
     );
 
     const addGoal = () => {
@@ -38,7 +43,7 @@ export default function OnboardingFlow() {
     };
 
     const nextStep = () => {
-        if (step < 3) {
+        if (step < 4) {
             setStep(step + 1);
         } else {
             dispatch(
@@ -48,37 +53,20 @@ export default function OnboardingFlow() {
         }
     };
 
-    const containerVariants = {
-        hidden: { opacity: 0, y: 50 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
-                when: "beforeChildren",
-                staggerChildren: 0.2,
-            },
-        },
-        exit: {
-            opacity: 0,
-            y: -50,
-            transition: { ease: "easeInOut" },
-        },
-    };
+    const toggleQuality = (quality: (typeof availableQualities)[0]) => {
+        const newQualities = selectedQualities?.some(
+            (q) => q.category === quality.category && q.item === quality.item
+        )
+            ? selectedQualities.filter(
+                  (q) =>
+                      !(
+                          q.category === quality.category &&
+                          q.item === quality.item
+                      )
+              )
+            : [...(selectedQualities ?? []), quality];
 
-    const childVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                type: "spring",
-                stiffness: 500,
-                damping: 25,
-            },
-        },
+        dispatch(setSelectedQuality(newQualities));
     };
 
     return (
@@ -86,167 +74,24 @@ export default function OnboardingFlow() {
             <Card className="w-full max-w-md mx-auto">
                 <CardContent className="p-6">
                     <AnimatePresence mode="wait">
-                        {step === 1 && (
-                            <motion.div
-                                key="welcome"
-                                variants={containerVariants}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                                className="space-y-6 text-center"
-                            >
-                                <motion.div
-                                    variants={childVariants}
-                                    className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
-                                >
-                                    <div className="w-8 h-8 rounded-full" />
-                                </motion.div>
-                                <motion.div
-                                    variants={childVariants}
-                                    className="space-y-2"
-                                >
-                                    <h1 className="text-2xl font-bold tracking-tight ">
-                                        Welcome to DailyGoals
-                                    </h1>
-                                    <p className="">
-                                        Your personal daily goal tracking
-                                        assistant. Let&apos;s set you up for
-                                        success, one day at a time.
-                                    </p>
-                                </motion.div>
-                                <motion.div variants={childVariants}>
-                                    <Button
-                                        onClick={nextStep}
-                                        className="w-full"
-                                    >
-                                        Get Started
-                                    </Button>
-                                </motion.div>
-                            </motion.div>
-                        )}
-
+                        {step === 1 && <WelcomeStep nextStep={nextStep} />}
                         {step === 2 && (
-                            <motion.div
-                                key="goals"
-                                variants={containerVariants}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                                className="space-y-6"
-                            >
-                                <motion.div
-                                    variants={childVariants}
-                                    className="text-center space-y-2"
-                                >
-                                    <h2 className="text-2xl font-bold tracking-tight">
-                                        Set Your Daily Goals
-                                    </h2>
-                                    <p className="">
-                                        What would you like to achieve today?
-                                    </p>
-                                </motion.div>
-                                <motion.div
-                                    variants={childVariants}
-                                    className="space-y-4"
-                                >
-                                    {dailyGoals.map((goal, index) => (
-                                        <motion.div
-                                            key={index}
-                                            initial={{ opacity: 0, y: -20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{
-                                                type: "spring",
-                                                stiffness: 500,
-                                                damping: 25,
-                                            }}
-                                            className="flex gap-2"
-                                        >
-                                            <Input
-                                                placeholder="Enter your daily goal"
-                                                value={goal}
-                                                onChange={(e) =>
-                                                    updateGoal(
-                                                        index,
-                                                        e.target.value
-                                                    )
-                                                }
-                                                className="flex-1"
-                                            />
-                                            {dailyGoals.length > 1 && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() =>
-                                                        removeGoal(index)
-                                                    }
-                                                    className=""
-                                                >
-                                                    <X className="h-4 w-4" />
-                                                </Button>
-                                            )}
-                                        </motion.div>
-                                    ))}
-                                    <Button
-                                        variant="outline"
-                                        className="w-full"
-                                        onClick={addGoal}
-                                    >
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Add Another Goal
-                                    </Button>
-                                </motion.div>
-                                <motion.div variants={childVariants}>
-                                    <Button
-                                        onClick={nextStep}
-                                        className="w-full"
-                                        disabled={dailyGoals.every(
-                                            (goal) => !goal.trim()
-                                        )}
-                                    >
-                                        Continue
-                                    </Button>
-                                </motion.div>
-                            </motion.div>
+                            <QualitiesStep
+                                nextStep={nextStep}
+                                qualities={selectedQualities}
+                                toggleQuality={toggleQuality}
+                            />
                         )}
-
                         {step === 3 && (
-                            <motion.div
-                                key="confirmation"
-                                variants={containerVariants}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                                className="space-y-6 text-center"
-                            >
-                                <motion.div
-                                    variants={childVariants}
-                                    className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
-                                >
-                                    <Check className="w-8 h-8" />
-                                </motion.div>
-                                <motion.div
-                                    variants={childVariants}
-                                    className="space-y-2"
-                                >
-                                    <h2 className="text-2xl font-bold tracking-tight">
-                                        You&apos;re All Set!
-                                    </h2>
-                                    <p className="">
-                                        Your daily goals have been saved.
-                                        Let&apos;s make today count!
-                                    </p>
-                                </motion.div>
-                                <motion.div variants={childVariants}>
-                                    <Button
-                                        onClick={nextStep}
-                                        className="w-full"
-                                    >
-                                        Start Your Journey
-                                    </Button>
-                                </motion.div>
-                            </motion.div>
+                            <GoalsStep
+                                dailyGoals={dailyGoals}
+                                addGoal={addGoal}
+                                updateGoal={updateGoal}
+                                removeGoal={removeGoal}
+                                nextStep={nextStep}
+                            />
                         )}
+                        {step === 4 && <ConfirmationStep nextStep={nextStep} />}
                     </AnimatePresence>
                 </CardContent>
             </Card>

@@ -3,6 +3,7 @@ import counterReducer from "~/lib/features/counterSlice";
 import onboardingReducer from "~/lib/features/onboardingSlice";
 import dailyGoalsReducer from "~/lib/features/dailyGoalsSlice";
 import avatarReducer from "~/lib/features/avatarSlice";
+import selectedQualitiesReducer from "~/lib/features/selectedQualitiesSlice";
 
 export const appStore = () => {
     return configureStore({
@@ -11,6 +12,7 @@ export const appStore = () => {
             onboarding: onboardingReducer,
             dailyGoals: dailyGoalsReducer,
             avatar: avatarReducer,
+            selectedQualities: selectedQualitiesReducer,
         },
     });
 };
